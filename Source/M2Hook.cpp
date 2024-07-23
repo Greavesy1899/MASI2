@@ -18,6 +18,39 @@
 
 SE::C_MainTickedModule TickedModule;
 
+#define LUA_IDSIZE        60        /* Size of lua_Debug.short_src. */
+
+struct lua_Debug {
+	int event;
+	const char* name;        /* (n) */
+	const char* namewhat;        /* (n) `global', `local', `field', `method' */
+	const char* what;        /* (S) `Lua', `C', `main', `tail' */
+	const char* source;        /* (S) */
+	int currentline;        /* (l) */
+	int nups;                /* (u) number of upvalues */
+	int linedefined;        /* (S) */
+	int lastlinedefined;        /* (S) */
+	char short_src[LUA_IDSIZE]; /* (S) */
+	/* private part */
+	int i_ci;  /* active function */
+};
+
+//uint64_t C_ScriptMachine_LuaHook_Old;
+//typedef bool(__thiscall* C_ScriptMachine_LuaHook)(void*, void*, lua_Debug*);
+//bool __fastcall HOOK_C_ScriptMachine_LuaHook(void* pThis, void* ecx, void* pState, lua_Debug* pDebug)
+//{
+//	C_ScriptMachine_LuaHook funcCast = (C_ScriptMachine_LuaHook)C_ScriptMachine_LuaHook_Old;
+//	const bool bResult = funcCast(pThis, pState, pDebug);
+//
+//	return bResult;
+//}
+
+uint64_t C_ScriptMachine_LuaHook_Old;
+void _cdecl HOOK_C_ScriptMachine_LuaHook(void* pState, lua_Debug* pDebug)
+{
+	PLH::FnCast(C_ScriptMachine_LuaHook_Old, &HOOK_C_ScriptMachine_LuaHook)(pState, pDebug);
+}
+
 uint64_t C_TickedModuleManager_AddAction_Old;
 typedef bool(__thiscall* C_TickedModuleManager_AddAction)(void*, int, int, SDK::C_TickedModule*, void*, float, int, int);
 bool __fastcall HOOK_C_TickedModuleManager_AddAction(void* pThis, void* ecx, int a2, int a3, SDK::C_TickedModule* a4, void* a5, float a6, int a7, int a8)
@@ -33,7 +66,7 @@ uint64_t C_TickedModuleManager_CallAction_Old;
 typedef bool(__thiscall* C_TickedModuleManager_CallAction)(void*, int, int);
 bool __fastcall HOOK_C_TickedModuleManager_CallAction(void* pThis, void* ecx, int a2, int a3)
 {
-	//tConsole::fPrintf("CallAction [type=%u, a3=%u]", a2, a3);
+	tConsole::fPrintf("CallAction [type=%u, a3=%u]", a2, a3);
 	C_TickedModuleManager_CallAction funcCast = (C_TickedModuleManager_CallAction)C_TickedModuleManager_CallAction_Old;
 	const bool bResult = funcCast(pThis, a2, a3);
 
@@ -43,6 +76,11 @@ bool __fastcall HOOK_C_TickedModuleManager_CallAction(void* pThis, void* ecx, in
 uint64_t sub_61CF20_Old;
 void __cdecl HOOK_sub_61CF20(void* lua_state, void* object, const char* object_name, const char* script_path, const char* class_name, int a6)
 {
+	if (strcmp(class_name, "C_GarageManager") == 0)
+	{
+		int z = 0;
+	}
+
 	tConsole::fPrintf("Reflecting: [%s.%s], [type = %s], [object = %p] [lua_state = %p]", script_path, object_name, class_name, object, lua_state);
 	PLH::FnCast(sub_61CF20_Old, &HOOK_sub_61CF20)(lua_state, object, object_name, script_path, class_name, a6);
 }
@@ -170,6 +208,9 @@ void MASI2Hook::Init()
 
 	PLH::x86Detour detour301((char*)0x0695920, (char*)&HOOK_VirtualFS_OpenIntern, &VirtualFS_OpenIntern_Old, dis);
 	detour301.hook();
+
+	PLH::x86Detour detour495((char*)0x17FCB20, (char*)&HOOK_C_ScriptMachine_LuaHook, &C_ScriptMachine_LuaHook_Old, dis);
+	detour495.hook();
 
 	PLH::x86Detour detour401((char*)0x17F4A80, (char*)&HOOK_C_ScriptMachine_LoadClassObject, &C_ScriptMachine_LoadClassObject_Old, dis);
 	detour401.hook();

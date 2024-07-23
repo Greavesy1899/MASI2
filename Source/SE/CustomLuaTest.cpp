@@ -8,6 +8,39 @@
 #include "SDK/C_Lua.h"
 #include "SDK/C_ScriptMachineManager.h"
 
+static bool LuaGC(void* a2)
+{
+	return 0;
+}
+
+static bool LuaEquals(void* a2)
+{
+	tConsole::fPrintf("<DEFAULT EQUALITY>");
+	void* Obj = MemUtils::CallCdeclMethod<void*, int>(0x05D31E0, 1);
+	if (Obj == MemUtils::CallCdeclMethod<void*, int>(0x05D31E0, 2))
+	{
+		MemUtils::CallCdeclMethod<void*, int>(0x05D3650, 1);
+	}
+	else
+	{
+		MemUtils::CallCdeclMethod<void*, int>(0x05D3650, 0);
+	}
+
+	return 1;
+}
+
+static bool LuaSave(void* a2)
+{
+	tConsole::fPrintf("<DEFAULT SAVE>");
+	return 1;
+}
+
+static bool LuaLoad(void* a1)
+{
+	tConsole::fPrintf("<DEFAULT LOAD>");
+	return 1;
+}
+
 static void MyFunction1(void* a2)
 {
 	tConsole::fPrintf("Hello from MyFunction1!!!");
@@ -37,7 +70,11 @@ static void LuaSleep(void* a1)
 	}
 }
 
-static SDK::Lua::LuaFunctionDescriptor MyCustomLuaClassDescriptors[3] = {
+static SDK::Lua::LuaFunctionDescriptor MyCustomLuaClassDescriptors[7] = {
+	SDK::Lua::LuaFunctionDescriptor("__gc", &LuaGC),
+	SDK::Lua::LuaFunctionDescriptor("__eq", &LuaEquals),
+	SDK::Lua::LuaFunctionDescriptor("__save", &LuaSave),
+	SDK::Lua::LuaFunctionDescriptor("__load", &LuaLoad),
 	SDK::Lua::LuaFunctionDescriptor("MyFunction1", &MyFunction1),
 	SDK::Lua::LuaFunctionDescriptor("MyFunction2", &MyFunction2),
 	SDK::Lua::LuaFunctionDescriptor("Sleep", &LuaSleep)
@@ -54,7 +91,7 @@ void C_MyCustomLuaClass::RegisterClass22()
 	// register class -> sub_62B810
 	const char* ClassName = "C_MyCustomLuaClass";
 	const char* ParentName = "";
-	MemUtils::CallCdeclMethod<void, const char*, const char*, SDK::Lua::LuaFunctionDescriptor*, uint32_t, int32_t>(0x62B810, ClassName, ParentName, MyCustomLuaClassDescriptors, 0, 0);
+	MemUtils::CallCdeclMethod<void, const char*, const char*, SDK::Lua::LuaFunctionDescriptor*, uint32_t, int32_t>(0x62B810, ClassName, ParentName, MyCustomLuaClassDescriptors, 4, 0);
 
 	tConsole::fPrintf("Registered: [type = %s]", ClassName);
 }

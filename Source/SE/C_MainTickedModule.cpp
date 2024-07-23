@@ -27,6 +27,7 @@ const char* SE::C_MainTickedModule::GetName() const
 bool SE::C_MainTickedModule::StaticRegister()
 {
 	SDK::C_TickedModuleManager* TickedMgr = SDK::C_TickedModuleManager::GetInstance();
+	TickedMgr->AddAction(10, 1004, this, &SE::C_MainTickedModule::OnMissionInit, -1.0f, 0, 0);
 	TickedMgr->AddAction(13, 300, this, &SE::C_MainTickedModule::OnGameInit, -1.0f, 0, 0);
 	TickedMgr->AddAction(14, 601, this, &SE::C_MainTickedModule::OnGameDone, -1.0f, 0, 0);
 	TickedMgr->AddAction(3, 400, this, &SE::C_MainTickedModule::OnTick, -1.0f, 0, 0);
@@ -49,9 +50,13 @@ LRESULT SE::C_MainTickedModule::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPAR
 	return ImGuiModule.WndProc(hWnd, msg, wParam, lParam);
 }
 
-void SE::C_MainTickedModule::OnGameInit(const SDK::I_TickedModuleCallEventContext& Context)
+void SE::C_MainTickedModule::OnMissionInit(const SDK::I_TickedModuleCallEventContext& Context)
 {
 	ExtensionModule.OnGameInit(Context);
+}
+
+void SE::C_MainTickedModule::OnGameInit(const SDK::I_TickedModuleCallEventContext& Context)
+{
 	ImGuiModule.OnGameInit(Context);
 }
 

@@ -32,6 +32,7 @@ namespace SE
 
 	protected:
 
+		void OnMissionInit(const SDK::I_TickedModuleCallEventContext& Context);
 		void OnGameInit(const SDK::I_TickedModuleCallEventContext& Context);
 		void OnGameDone(const SDK::I_TickedModuleCallEventContext& Context);
 		void OnTick(const SDK::I_TickedModuleCallEventContext& Context);

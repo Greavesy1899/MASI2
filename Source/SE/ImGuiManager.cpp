@@ -98,8 +98,9 @@ void ImGuiManager::Tick()
 						{
 							if (ImGui::TreeNodeEx(ScriptMachine, ImGuiTreeNodeFlags_DefaultOpen, "%s", ScriptMachine->GetScriptMachineName()))
 							{
-								ImGui::BulletText("ScriptMachine ID", ScriptMachine->GetScriptMachineID());
+								ImGui::BulletText("ScriptMachine ID: %u", ScriptMachine->GetScriptMachineID());
 								ImGui::BulletText("Script Name: %s", ScriptMachine->GetScriptName());
+								ImGui::BulletText("Lua State: %p", ScriptMachine->GetLuaState());
 								ImGui::Text("Lua Message:");
 								ImGui::TextWrapped(ScriptMachine->GetLuaMsg());
 
