@@ -106,18 +106,8 @@ void ImGuiManager::Tick()
 
 								if (ImGui::Button("Execute Script"))
 								{
-									ScriptMachine->EnableHook(true);
-
 									C_String TempString = C_String::Make("game.custom:MyFunction1() game.custom:Sleep(100) game.custom:MyFunction2()");
 									bool bResult = ScriptMachine->DoString(-1, TempString, 0);
-
-									//C_String TempString1 = C_String::Make("game.custom:MyFunction2()");
-									//bResult = ScriptMachine->DoString(-1, TempString1, 0);
-
-									//C_String TempString2 = C_String::Make("game.custom:Sleep()");
-									//bResult = ScriptMachine->DoString(-1, TempString2, 0);
-
-									ScriptMachine->EnableHook(false);
 								}
 
 								ImGui::SameLine();
@@ -141,11 +131,7 @@ void ImGuiManager::Tick()
 										delete[] FileBuffer;
 									}
 
-									ScriptMachine->EnableHook(true);
-
 									bool bResult = ScriptMachine->DoString(-1, StringToExecute, 0);
-
-									ScriptMachine->EnableHook(false);
 								}
 
 								ImGui::TreePop();
